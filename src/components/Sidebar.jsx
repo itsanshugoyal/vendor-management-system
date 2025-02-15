@@ -1,12 +1,12 @@
-import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, UserGroupIcon, TruckIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
+import { Link, useLocation } from "react-router-dom";
+import { HomeIcon, UserGroupIcon, TruckIcon, BuildingOfficeIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon },
-  { name: 'Vendor Management', href: '/vendors', icon: BuildingOfficeIcon },
-  { name: 'Fleet Management', href: '/fleet', icon: TruckIcon },
-  { name: 'Driver Management', href: '/drivers', icon: UserGroupIcon },
+  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Vendor Management", href: "/vendors", icon: BuildingOfficeIcon },
+  { name: "Fleet Management", href: "/fleet", icon: TruckIcon },
+  { name: "Driver Management", href: "/drivers", icon: UserGroupIcon },
 ];
 
 export default function Sidebar() {
@@ -27,9 +27,9 @@ export default function Sidebar() {
                     to={item.href}
                     className={clsx(
                       location.pathname === item.href
-                        ? 'bg-gray-800 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                        ? "bg-gray-800 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-gray-800",
+                      "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     )}
                   >
                     <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />

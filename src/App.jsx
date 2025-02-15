@@ -1,9 +1,9 @@
-import { Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import VendorManagement from './pages/VendorManagement';
-import FleetManagement from './pages/FleetManagement';
-import DriverManagement from './pages/DriverManagement';
+import { Routes, Route } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import VendorManagement from "./pages/VendorManagement";
+import FleetManagement from "./pages/FleetManagement";
+import DriverManagement from "./pages/DriverManagement";
 
 export default function App() {
   return (
