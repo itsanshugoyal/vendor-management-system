@@ -1,20 +1,26 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
+// ComplianceAlert component to display alert messages based on severity
 const ComplianceAlert = ({ title, description, severity, onResolve }) => (
   <div className={`rounded-md ${severity === "high" ? "bg-red-50" : "bg-yellow-50"} p-4 mb-4`}>
     <div className="flex">
+      {/* Alert Icon */}
       <div className="flex-shrink-0">
         <ExclamationTriangleIcon
           className={`h-5 w-5 ${severity === "high" ? "text-red-400" : "text-yellow-400"}`}
           aria-hidden="true"
         />
       </div>
+
+      {/* Alert Content */}
       <div className="ml-3 flex-grow">
         <h3 className={`text-sm font-medium ${severity === "high" ? "text-red-800" : "text-yellow-800"}`}>{title}</h3>
         <div className={`mt-2 text-sm ${severity === "high" ? "text-red-700" : "text-yellow-700"}`}>
           <p>{description}</p>
         </div>
       </div>
+
+      {/* Resolve Button (Optional) */}
       {onResolve && (
         <button
           onClick={onResolve}

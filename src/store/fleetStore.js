@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { format, isAfter } from "date-fns";
+import { isAfter } from "date-fns";
 
 const useFleetStore = create((set, get) => ({
   vehicles: [
@@ -31,15 +31,24 @@ const useFleetStore = create((set, get) => ({
     },
   ],
 
+  // Add a new vehicle
   addVehicle: (vehicleData) => {
     const newVehicle = {
-      id: Date.now(),
+      id: Date.now(), // Unique ID using timestamp
       ...vehicleData,
       status: "Active",
     };
     set((state) => ({ vehicles: [...state.vehicles, newVehicle] }));
   },
 
+  // Update a vehicle's details
+  updateVehicle: (vehicleId, updatedData) => {
+    set((state) => ({
+      vehicles: state.vehicles.map((vehicle) => (vehicle.id === vehicleId ? { ...vehicle, ...updatedData } : vehicle)),
+    }));
+  },
+
+  // Update a specific document for a vehicle
   updateVehicleDocuments: (vehicleId, documentType, documentData) => {
     set((state) => ({
       vehicles: state.vehicles.map((vehicle) => {
@@ -60,6 +69,7 @@ const useFleetStore = create((set, get) => ({
     }));
   },
 
+  // Get vehicles associated with a specific vendor
   getVehiclesByVendor: (vendorId) => {
     return get().vehicles.filter((vehicle) => vehicle.vendorId === vendorId);
   },

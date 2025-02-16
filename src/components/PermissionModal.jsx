@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useVendorStore from "../store/vendorStore";
 
+// List of available permissions
 const permissionsList = [
   { id: "fleetManagement", label: "Fleet Management" },
   { id: "driverOnboarding", label: "Driver Onboarding" },
@@ -13,8 +14,10 @@ export default function PermissionsModal({ isOpen, onClose, vendor }) {
   const updateVendorPermissions = useVendorStore((state) => state.updateVendorPermissions);
   const [permissions, setPermissions] = useState(vendor?.permissions || {});
 
+  // Return null if modal is not open
   if (!isOpen) return null;
 
+  // Toggle permission selection
   const handlePermissionChange = (permissionId) => {
     setPermissions((prev) => ({
       ...prev,
@@ -22,15 +25,19 @@ export default function PermissionsModal({ isOpen, onClose, vendor }) {
     }));
   };
 
+  // Save permissions and close modal
   const handleSave = () => {
     updateVendorPermissions(vendor.id, permissions);
     onClose();
   };
 
   return (
+    // Modal overlay
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
       <div className="bg-white rounded-lg p-6 max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4">Manage Permissions for {vendor.name}</h2>
+
+        {/* Permission checkboxes */}
         <div className="space-y-4">
           {permissionsList.map(({ id, label }) => (
             <div key={id} className="flex items-center">
@@ -47,6 +54,8 @@ export default function PermissionsModal({ isOpen, onClose, vendor }) {
             </div>
           ))}
         </div>
+
+        {/* Action buttons */}
         <div className="mt-6 flex justify-end space-x-3">
           <button
             type="button"

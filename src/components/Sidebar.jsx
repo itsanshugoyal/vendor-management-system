@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { HomeIcon, UserGroupIcon, TruckIcon, BuildingOfficeIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
+// Navigation links with associated icons
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
   { name: "Vendor Management", href: "/vendors", icon: BuildingOfficeIcon },
@@ -10,13 +11,16 @@ const navigation = [
 ];
 
 export default function Sidebar() {
-  const location = useLocation();
+  const location = useLocation(); // Get current route for active link highlighting
 
   return (
     <div className="flex h-full flex-col bg-gray-900 w-64">
+      {/* Sidebar header */}
       <div className="flex h-16 shrink-0 items-center px-6">
         <h1 className="text-xl font-bold text-white">Vendor Cab System</h1>
       </div>
+
+      {/* Navigation menu */}
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7 px-6">
           <li>
@@ -27,7 +31,7 @@ export default function Sidebar() {
                     to={item.href}
                     className={clsx(
                       location.pathname === item.href
-                        ? "bg-gray-800 text-white"
+                        ? "bg-gray-800 text-white" // Highlight active link
                         : "text-gray-400 hover:text-white hover:bg-gray-800",
                       "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                     )}

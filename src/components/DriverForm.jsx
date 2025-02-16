@@ -6,6 +6,7 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
   const addDriver = useDriverStore((state) => state.addDriver);
   const vehicles = useFleetStore((state) => state.vehicles);
 
+  // Initialize form state
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -15,18 +16,20 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
     },
   });
 
+  // Populate form if editing an existing driver
   useEffect(() => {
     if (driver) {
       setFormData(driver);
     }
   }, [driver]);
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (driver) {
-      onSubmit({ ...formData, vendorId });
+      onSubmit({ ...formData, vendorId }); // Update existing driver
     } else {
-      addDriver({ ...formData, vendorId });
+      addDriver({ ...formData, vendorId }); // Add new driver
       onSubmit(formData);
     }
     onClose();
@@ -34,6 +37,7 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Driver Name Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Driver Name</label>
         <input
@@ -45,6 +49,7 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
         />
       </div>
 
+      {/* Phone Number Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Phone Number</label>
         <input
@@ -57,6 +62,7 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
         />
       </div>
 
+      {/* Vehicle Selection Dropdown */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Assign Vehicle</label>
         <select
@@ -74,12 +80,15 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
         </select>
       </div>
 
+      {/* Driver's Document Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">Documents</h3>
 
+        {/* Driving License Details */}
         <div className="border-t pt-4">
           <h4 className="text-sm font-medium text-gray-700">Driving License Details</h4>
           <div className="mt-2 grid grid-cols-2 gap-4">
+            {/* License Number Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700">License Number</label>
               <input
@@ -98,6 +107,8 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
                 }
               />
             </div>
+
+            {/* License Expiry Date Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
               <input
@@ -120,6 +131,7 @@ export default function DriverForm({ vendorId, driver, onClose, onSubmit }) {
         </div>
       </div>
 
+      {/* Form Action Buttons */}
       <div className="flex justify-end space-x-3">
         <button
           type="button"

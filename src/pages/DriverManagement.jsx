@@ -4,30 +4,39 @@ import DriverForm from "../components/DriverForm";
 import useDriverStore from "../store/driverStore";
 
 export default function DriverManagement() {
-  // Get drivers from the Zustand store
+  // Zustand store state and actions
   const drivers = useDriverStore((state) => state.drivers);
   const updateDriver = useDriverStore((state) => state.updateDriver);
+
+  // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
 
-  // Replace with your actual vendorId; using dummy vendorId = 1 for this example
+  // Dummy vendorId (Replace with actual vendor logic)
   const vendorId = 1;
 
+  // Handles edit button click
   const handleEditClick = (driver) => {
     setSelectedDriver(driver);
     setShowModal(true);
   };
 
+  // Handles form submission for updating driver details
   const handleFormSubmit = (formData) => {
-    if (selectedDriver) {
-      updateDriver(selectedDriver.id, formData);
+    try {
+      if (selectedDriver) {
+        updateDriver(selectedDriver.id, formData);
+      }
+      setShowModal(false);
+      setSelectedDriver(null);
+    } catch (error) {
+      console.error("Failed to update driver:", error);
     }
-    setShowModal(false);
-    setSelectedDriver(null);
   };
 
   return (
     <div className="p-6">
+      {/* Header Section */}
       <div className="sm:flex sm:items-center justify-between">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">Driver Management</h1>
@@ -55,43 +64,19 @@ export default function DriverManagement() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 License Number
               </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Phone
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Vendor ID
               </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Vehicle ID
               </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Status
-              </th>
-              <th scope="col" className="relative px-6 py-3">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="relative px-6 py-3">
                 <span className="sr-only">Edit</span>
               </th>
             </tr>

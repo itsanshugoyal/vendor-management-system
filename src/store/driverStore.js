@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { format, isAfter } from "date-fns";
+import { isAfter } from "date-fns";
 
 const useDriverStore = create((set, get) => ({
+  // Initial list of drivers
   drivers: [
     {
       id: 1,
@@ -20,48 +21,52 @@ const useDriverStore = create((set, get) => ({
     },
   ],
 
+  // Add a new driver
   addDriver: (driverData) => {
     const newDriver = {
-      id: Date.now(),
+      id: Date.now(), // Unique ID
       ...driverData,
       status: "Active",
     };
     set((state) => ({ drivers: [...state.drivers, newDriver] }));
   },
 
+  // Update driver's document details and validity status
   updateDriverDocuments: (driverId, documentType, documentData) => {
     set((state) => ({
-      drivers: state.drivers.map((driver) => {
-        if (driver.id === driverId) {
-          return {
-            ...driver,
-            documents: {
-              ...driver.documents,
-              [documentType]: {
-                ...documentData,
-                status: isAfter(new Date(documentData.expiryDate), new Date()) ? "Valid" : "Expired",
+      drivers: state.drivers.map((driver) =>
+        driver.id === driverId
+          ? {
+              ...driver,
+              documents: {
+                ...driver.documents,
+                [documentType]: {
+                  ...documentData,
+                  status: isAfter(new Date(documentData.expiryDate), new Date()) ? "Valid" : "Expired",
+                },
               },
-            },
-          };
-        }
-        return driver;
-      }),
+            }
+          : driver
+      ),
     }));
   },
 
+  // Assign a vehicle to a driver
   assignVehicle: (driverId, vehicleId) => {
     set((state) => ({
-      drivers: state.drivers.map((driver) => {
-        if (driver.id === driverId) {
-          return { ...driver, vehicleId };
-        }
-        return driver;
-      }),
+      drivers: state.drivers.map((driver) => (driver.id === driverId ? { ...driver, vehicleId } : driver)),
     }));
   },
 
+  // Retrieve all drivers associated with a specific vendor
   getDriversByVendor: (vendorId) => {
     return get().drivers.filter((driver) => driver.vendorId === vendorId);
+  },
+  // In your useDriverStore file
+  updateDriver: (driverId, updatedData) => {
+    set((state) => ({
+      drivers: state.drivers.map((driver) => (driver.id === driverId ? { ...driver, ...updatedData } : driver)),
+    }));
   },
 }));
 

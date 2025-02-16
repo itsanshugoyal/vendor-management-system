@@ -1,68 +1,139 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFleetStore from "../store/fleetStore";
 
-export default function VehicleForm({ vendorId, onClose }) {
+export default function VehicleForm({ vendorId, vehicle, onClose, onSubmit }) {
+  // Retrieve actions from the fleet store
   const addVehicle = useFleetStore((state) => state.addVehicle);
+  const updateVehicle = useFleetStore((state) => state.updateVehicle);
+
+  // Initialize form state with defaults; prefill if editing a vehicle
   const [formData, setFormData] = useState({
-    registrationNumber: "",
-    model: "",
-    seatingCapacity: "",
-    fuelType: "",
+    registrationNumber: vehicle ? vehicle.registrationNumber : "",
+    model: vehicle ? vehicle.model : "",
+    seatingCapacity: vehicle ? vehicle.seatingCapacity : "",
+    fuelType: vehicle ? vehicle.fuelType : "",
     documents: {
-      rc: { number: "", expiryDate: "" },
-      permit: { number: "", expiryDate: "" },
-      pollution: { number: "", expiryDate: "" },
+      rc: {
+        number: vehicle?.documents?.rc?.number || "",
+        expiryDate: vehicle?.documents?.rc?.expiryDate || "",
+      },
+      permit: {
+        number: vehicle?.documents?.permit?.number || "",
+        expiryDate: vehicle?.documents?.permit?.expiryDate || "",
+      },
+      pollution: {
+        number: vehicle?.documents?.pollution?.number || "",
+        expiryDate: vehicle?.documents?.pollution?.expiryDate || "",
+      },
     },
   });
 
+  // Update formData if vehicle prop changes (for editing mode)
+  useEffect(() => {
+    if (vehicle) {
+      setFormData({
+        registrationNumber: vehicle.registrationNumber,
+        model: vehicle.model,
+        seatingCapacity: vehicle.seatingCapacity,
+        fuelType: vehicle.fuelType,
+        documents: {
+          rc: {
+            number: vehicle.documents?.rc?.number || "",
+            expiryDate: vehicle.documents?.rc?.expiryDate || "",
+          },
+          permit: {
+            number: vehicle.documents?.permit?.number || "",
+            expiryDate: vehicle.documents?.permit?.expiryDate || "",
+          },
+          pollution: {
+            number: vehicle.documents?.pollution?.number || "",
+            expiryDate: vehicle.documents?.pollution?.expiryDate || "",
+          },
+        },
+      });
+    }
+  }, [vehicle]);
+
+  // Generic change handler for top-level form fields
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Change handler for nested document fields
+  const handleDocumentChange = (docType, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      documents: {
+        ...prev.documents,
+        [docType]: { ...prev.documents[docType], [field]: value },
+      },
+    }));
+  };
+
+  // Form submission handler for adding/updating vehicle
   const handleSubmit = (e) => {
     e.preventDefault();
-    addVehicle({ ...formData, vendorId });
+    const vehicleData = { ...formData, vendorId };
+    if (vehicle) {
+      updateVehicle(vehicle.id, vehicleData);
+    } else {
+      addVehicle(vehicleData);
+    }
+    if (onSubmit) onSubmit(vehicleData);
     onClose();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Registration Number Field */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Registration Number</label>
         <input
           type="text"
           required
+          name="registrationNumber"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           value={formData.registrationNumber}
-          onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+          onChange={handleChange}
         />
       </div>
 
+      {/* Model Field */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Model</label>
         <input
           type="text"
           required
+          name="model"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           value={formData.model}
-          onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+          onChange={handleChange}
         />
       </div>
 
+      {/* Seating Capacity Field */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Seating Capacity</label>
         <input
           type="number"
           required
+          name="seatingCapacity"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           value={formData.seatingCapacity}
-          onChange={(e) => setFormData({ ...formData, seatingCapacity: e.target.value })}
+          onChange={handleChange}
         />
       </div>
 
+      {/* Fuel Type Dropdown */}
       <div>
         <label className="block text-sm font-medium text-gray-700">Fuel Type</label>
         <select
+          name="fuelType"
           required
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           value={formData.fuelType}
-          onChange={(e) => setFormData({ ...formData, fuelType: e.target.value })}
+          onChange={handleChange}
         >
           <option value="">Select Fuel Type</option>
           <option value="Petrol">Petrol</option>
@@ -72,6 +143,7 @@ export default function VehicleForm({ vendorId, onClose }) {
         </select>
       </div>
 
+      {/* Documents Section */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">Documents</h3>
 
@@ -84,17 +156,10 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="text"
                 required
+                name="rcNumber"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.rc.number}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      rc: { ...formData.documents.rc, number: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("rc", "number", e.target.value)}
               />
             </div>
             <div>
@@ -102,17 +167,10 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="date"
                 required
+                name="rcExpiry"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.rc.expiryDate}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      rc: { ...formData.documents.rc, expiryDate: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("rc", "expiryDate", e.target.value)}
               />
             </div>
           </div>
@@ -127,17 +185,10 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="text"
                 required
+                name="permitNumber"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.permit.number}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      permit: { ...formData.documents.permit, number: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("permit", "number", e.target.value)}
               />
             </div>
             <div>
@@ -145,17 +196,10 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="date"
                 required
+                name="permitExpiry"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.permit.expiryDate}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      permit: { ...formData.documents.permit, expiryDate: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("permit", "expiryDate", e.target.value)}
               />
             </div>
           </div>
@@ -170,17 +214,10 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="text"
                 required
+                name="pollutionNumber"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.pollution.number}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      pollution: { ...formData.documents.pollution, number: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("pollution", "number", e.target.value)}
               />
             </div>
             <div>
@@ -188,23 +225,17 @@ export default function VehicleForm({ vendorId, onClose }) {
               <input
                 type="date"
                 required
+                name="pollutionExpiry"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 value={formData.documents.pollution.expiryDate}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    documents: {
-                      ...formData.documents,
-                      pollution: { ...formData.documents.pollution, expiryDate: e.target.value },
-                    },
-                  })
-                }
+                onChange={(e) => handleDocumentChange("pollution", "expiryDate", e.target.value)}
               />
             </div>
           </div>
         </div>
       </div>
 
+      {/* Action Buttons */}
       <div className="flex justify-end space-x-3">
         <button
           type="button"
@@ -217,7 +248,7 @@ export default function VehicleForm({ vendorId, onClose }) {
           type="submit"
           className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          Add Vehicle
+          {vehicle ? "Update Vehicle" : "Add Vehicle"}
         </button>
       </div>
     </form>

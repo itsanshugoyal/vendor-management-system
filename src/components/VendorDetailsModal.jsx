@@ -1,27 +1,22 @@
-// src/components/VendorDetailsModal.jsx
 import React, { useMemo } from "react";
 import useFleetStore from "../store/fleetStore";
 import useDriverStore from "../store/driverStore";
 
 const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
-  if (!vendor) return null;
+  if (!vendor) return null; // Prevents rendering if no vendor is selected
 
-  // Retrieve all fleet and driver data once
+  // Retrieve fleet and driver data from stores
   const allVehicles = useFleetStore((state) => state.vehicles);
   const allDrivers = useDriverStore((state) => state.drivers);
 
-  // Use memoization to prevent repeated filtering that can trigger re-renders
-  const vehicles = useMemo(() => {
-    return allVehicles.filter((v) => v.vendorId === vendor.id);
-  }, [allVehicles, vendor?.id]);
-
-  const drivers = useMemo(() => {
-    return allDrivers.filter((d) => d.vendorId === vendor.id);
-  }, [allDrivers, vendor?.id]);
+  // Memoized filtering to improve performance and avoid unnecessary re-renders
+  const vehicles = useMemo(() => allVehicles.filter((v) => v.vendorId === vendor.id), [allVehicles, vendor?.id]);
+  const drivers = useMemo(() => allDrivers.filter((d) => d.vendorId === vendor.id), [allDrivers, vendor?.id]);
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
+        {/* Header with title and close button */}
         <div className="flex justify-between items-start">
           <h2 className="text-lg font-semibold text-gray-900">{vendor.name} Details</h2>
           <button onClick={onClose} className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none">
@@ -33,7 +28,7 @@ const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
         </div>
 
         <div className="mt-4 space-y-6">
-          {/* Vendor Information */}
+          {/* Vendor Information Section */}
           <div>
             <h3 className="text-sm font-medium text-gray-500">Vendor Information</h3>
             <dl className="mt-2 grid grid-cols-2 gap-4">
@@ -48,6 +43,7 @@ const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
               <div>
                 <dt className="text-sm font-medium text-gray-500">Status</dt>
                 <dd className="text-sm">
+                  {/* Status badge with dynamic styling */}
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       vendor.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
@@ -60,7 +56,7 @@ const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
             </dl>
           </div>
 
-          {/* Fleet Overview */}
+          {/* Fleet Overview Section */}
           <div>
             <h3 className="text-sm font-medium text-gray-500">Fleet Overview</h3>
             <dl className="mt-2 grid grid-cols-2 gap-4">
@@ -75,7 +71,7 @@ const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
             </dl>
           </div>
 
-          {/* Actions */}
+          {/* Action Buttons */}
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
@@ -83,6 +79,7 @@ const VendorDetailsModal = ({ vendor, onClose, onSuspend, onResume }) => {
             >
               Close
             </button>
+            {/* Show Suspend or Resume button based on vendor status */}
             {vendor.status === "Active" ? (
               <button
                 onClick={() => onSuspend(vendor.id)}

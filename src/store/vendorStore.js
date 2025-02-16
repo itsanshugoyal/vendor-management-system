@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 const useVendorStore = create((set, get) => ({
+  // Initial vendor hierarchy
   vendors: [
     {
       id: 1,
@@ -57,9 +58,10 @@ const useVendorStore = create((set, get) => ({
     },
   ],
 
+  // Add a new top-level vendor
   addVendor: (vendorData) => {
     const newVendor = {
-      id: Date.now(),
+      id: Date.now(), // Unique ID
       ...vendorData,
       children: [],
       activeFleet: 0,
@@ -68,6 +70,7 @@ const useVendorStore = create((set, get) => ({
     set((state) => ({ vendors: [...state.vendors, newVendor] }));
   },
 
+  // Add a sub-vendor under a specified parent vendor
   addSubVendor: (parentId, vendorData) => {
     const addSubVendorRecursive = (vendors) => {
       return vendors.map((vendor) => {
@@ -98,6 +101,7 @@ const useVendorStore = create((set, get) => ({
     }));
   },
 
+  // Update permissions for a vendor
   updateVendorPermissions: (vendorId, permissions) => {
     const updateVendorRecursive = (vendors) => {
       return vendors.map((vendor) => {
@@ -116,11 +120,12 @@ const useVendorStore = create((set, get) => ({
     }));
   },
 
+  // Update vendor status (Active/Inactive) and apply to all sub-vendors
   updateVendorStatus: (vendorId, status) => {
     const updateVendorRecursive = (vendors) => {
       return vendors.map((vendor) => {
         if (vendor.id === vendorId) {
-          // Update the vendor and all its children with the new status
+          // Update the vendor and all its sub-vendors
           const updateChildren = (v) => ({
             ...v,
             status,
@@ -140,6 +145,7 @@ const useVendorStore = create((set, get) => ({
     }));
   },
 
+  // Delegate permissions from a Super Vendor to another vendor
   delegateAuthority: (fromVendorId, toVendorId, permissions) => {
     const findVendor = (vendors, id) => {
       for (const vendor of vendors) {
@@ -160,6 +166,7 @@ const useVendorStore = create((set, get) => ({
     get().updateVendorPermissions(toVendorId, permissions);
   },
 
+  // Get the hierarchical path of a vendor
   getVendorHierarchy: (vendorId) => {
     const findVendorPath = (vendors, id, path = []) => {
       for (const vendor of vendors) {
@@ -176,6 +183,7 @@ const useVendorStore = create((set, get) => ({
     return findVendorPath(get().vendors, vendorId);
   },
 
+  // Get compliance status of a vendor
   getComplianceStatus: (vendorId) => {
     const vendor = get().vendors.find((v) => v.id === vendorId);
     if (!vendor) return null;
